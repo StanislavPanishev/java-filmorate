@@ -50,13 +50,13 @@ public class FilmController {
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) {
         // проверяем необходимые условия
-        validate(film);
         if (!films.containsKey(film.getId())) {
-            throw new ValidationException("film c id=" + film.getId() + " не найден");
+            throw new ValidationException("Фильм c id=" + film.getId() + " не найден");
         }
+        validate(film);
         log.info("Изменен фильм с id={}", film.getId());
         films.put(film.getId(), film);
-        return films.get(film.getId());
+        return film;
     }
 
     public void validate(Film film) {
