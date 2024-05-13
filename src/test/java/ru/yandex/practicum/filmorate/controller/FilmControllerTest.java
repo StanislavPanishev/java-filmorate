@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FilmControllerTest {
-    FilmController filmController;
+    private FilmController filmController;
 
     @BeforeEach
     void setFilmController() {
@@ -19,7 +19,7 @@ class FilmControllerTest {
     }
 
     @Test
-    void validateFilm() {
+    protected void validateFilm() {
         final Film film = new Film(
                 1L,
                 "Иван Васильевич меняет профессию",
@@ -31,7 +31,7 @@ class FilmControllerTest {
     }
 
     @Test
-    void validateFilmReleaseDateFail() {
+    protected void validateFilmReleaseDateFail() {
         final Film film = new Film(
                 1L,
                 "Иван Васильевич меняет профессию",

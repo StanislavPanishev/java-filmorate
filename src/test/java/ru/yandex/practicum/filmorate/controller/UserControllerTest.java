@@ -10,10 +10,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class UserControllerTest {
-    static UserController userController = new UserController();
+    private static final UserController userController = new UserController();
 
     @Test
-    void validateUser() {
+    protected void validateUser() {
         final User validUser = new User(
                 1L,
                 "bunsha1973@mail.ru",
@@ -26,7 +26,7 @@ class UserControllerTest {
 
 
     @Test
-    void validateUserLoginFail() {
+    protected void validateUserLoginFail() {
         final User validUser = new User(
                 1L,
                 "bunsha1973@mail.ru",
@@ -44,7 +44,7 @@ class UserControllerTest {
 
 
     @Test
-    void validateUserNameIsNull() {
+    protected void validateUserNameIsNull() {
         final User validUser = new User(
                 1L,
                 "bunsha1973@mail.ru",
