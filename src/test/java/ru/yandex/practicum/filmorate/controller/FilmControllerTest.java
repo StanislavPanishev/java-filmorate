@@ -14,9 +14,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FilmControllerTest {
-    InMemoryFilmStorage filmStorage;
-    InMemoryUserStorage userStorage;
-    Film film;
+    private InMemoryFilmStorage filmStorage;
+    private InMemoryUserStorage userStorage;
+    private Film film;
 
     @BeforeEach
     void setFilmController() {

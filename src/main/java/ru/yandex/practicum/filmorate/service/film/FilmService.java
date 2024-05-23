@@ -14,31 +14,37 @@ import java.util.List;
 @Service
 @Slf4j
 @AllArgsConstructor
-public class FilmService {
+public class FilmService implements FilmServiceInterface {
 
-    InMemoryFilmStorage filmStorage;
-    InMemoryUserStorage userStorage;
+    private InMemoryFilmStorage filmStorage;
+    private InMemoryUserStorage userStorage;
 
+    @Override
     public Collection<Film> getAll() {
         return filmStorage.getAll();
     }
 
+    @Override
     public void create(Film film) {
         filmStorage.create(film);
     }
 
+    @Override
     public void update(Film newFilm) {
         filmStorage.update(newFilm);
     }
 
+    @Override
     public Film get(long id) {
         return filmStorage.get(id);
     }
 
+    @Override
     public void delete(long id) {
         filmStorage.delete(id);
     }
 
+    @Override
     public void addLike(Long id, Long userId) {
         if (userStorage.getUsers().containsKey(userId)) {
             filmStorage.addLike(id, userId);
@@ -47,6 +53,7 @@ public class FilmService {
         }
     }
 
+    @Override
     public void deleteLike(Long id, Long userId) {
         if (userStorage.getUsers().containsKey(userId)) {
             filmStorage.deleteLike(id, userId);
@@ -55,6 +62,7 @@ public class FilmService {
         }
     }
 
+    @Override
     public List<Film> getPopular(Long count) {
         return filmStorage.getPopular(count);
     }

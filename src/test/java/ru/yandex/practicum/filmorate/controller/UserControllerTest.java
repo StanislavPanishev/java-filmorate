@@ -13,8 +13,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class UserControllerTest {
-    InMemoryUserStorage userStorage;
-    User user;
+    private InMemoryUserStorage userStorage;
+    private User user;
 
     @BeforeEach
     void setFilmController() {
