@@ -5,13 +5,13 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exceptions.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Friend;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.BaseDbStorage;
 
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
@@ -226,23 +226,14 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
                 id).isPresent();
     }
 
-    public void validate(User user) {
-        if (!user.getEmail().contains("@")) {
-            throw new ValidationException("Электронная почта должна содержать символ @");
+    private void validate(User user) {
+        if (isDuplicatedEmail(user.getEmail())) {
+            throw new DuplicatedDataException("Этот e-mail уже используется");
         }
-
         if (user.getLogin().contains(" ")) {
-            throw new ValidationException("Логин не должен содержать пробелы");
+            throw new ValidationException("Логин не может содержать пробелов");
         }
-
-        if (user.getName() == null) {
-            user.setName(user.getLogin());
-        }
-
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            throw new ValidationException("Введенная дата рождения не может быть позже сегодняшней даты");
-        }
-
+        if (user.getName() == null || user.getName().isBlank()) user.setName(user.getLogin());
     }
 
     private boolean isDuplicatedEmail(String email) {

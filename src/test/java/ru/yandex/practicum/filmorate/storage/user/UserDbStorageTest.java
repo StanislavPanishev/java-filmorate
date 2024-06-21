@@ -254,7 +254,7 @@ class UserDbStorageTest {
                 () -> userDbStorage.create(user)
         );
         assertEquals(
-                "Логин не должен содержать пробелы",
+                "Логин не может содержать пробелов",
                 exception.getMessage()
         );
     }
