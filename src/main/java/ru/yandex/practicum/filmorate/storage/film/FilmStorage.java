@@ -3,23 +3,24 @@ package ru.yandex.practicum.filmorate.storage.film;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.Collection;
-import java.util.List;
 
 public interface FilmStorage {
-    void create(Film film);
+    Collection<Film> findAll();
 
-    void update(Film film);
+    Film findById(Long id);
 
-    Film get(long id);
+    Film create(Film film);
 
-    void delete(long id);
+    Film update(Film newFilm);
 
-    Collection<Film> getAll();
+    void delete(Long id);
 
-    void addLike(Long id, Long userId);
+    Film addLike(Long id, Long userId);
 
     void deleteLike(Long id, Long userId);
 
-    List<Film> getPopular(Long count);
+    Collection<Film> getPopular(Long count);
+
+    boolean isFilmExists(Long id);
 
 }

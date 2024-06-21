@@ -8,11 +8,10 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.film.FilmService;
 
 import java.util.Collection;
-import java.util.List;
 
 @Slf4j
-@RestController
 @RequiredArgsConstructor
+@RestController
 @RequestMapping("/films")
 public class FilmController {
 
@@ -31,6 +30,7 @@ public class FilmController {
 
     // Добавление фильма
     @PostMapping
+    //@ResponseStatus(HttpStatus.OK)
     public Film create(@Valid @RequestBody Film film) {
         log.info("Добавлен фильм с id={}", film.getId());
         // сохраняем новую публикацию в памяти приложения
@@ -65,7 +65,8 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> getPopular(@RequestParam(defaultValue = "10") long count) {
+    public Collection<Film> getPopular(
+            @RequestParam(defaultValue = "10", required = false) Long count) {
         return filmService.getPopular(count);
     }
 }
