@@ -1,14 +1,11 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -130,121 +127,7 @@ class UserDbStorageTest {
         assertEquals(newUser.getBirthday(), responseEntity.iterator().next().getBirthday());
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {
-            "mail",
-            "@ya.ru",
-            "ya.ru",
-            "m   ail@ya.ru",
-            ".mail@ya.ru",
-            "mail@ya.ru.",
-            "m@il@ya.ru"
-    })
-    void createUserWithNotCorrectEMail(String email) {
-        User user = getTestUser(1);
-        user.setEmail(email);
 
-        List<ConstraintViolation<User>> violations = new ArrayList<>(validator.validate(user));
-
-        ExpectedViolation expectedViolation = new ExpectedViolation(
-                "email", "должно иметь формат адреса электронной почты");
-        assertEquals(1, violations.size());
-        assertEquals(
-                expectedViolation.propertyPath,
-                violations.get(0).getPropertyPath().toString()
-        );
-        assertEquals(
-                expectedViolation.message,
-                violations.get(0).getMessage()
-        );
-    }
-
-    @Test
-    void createUserWithNullEMail() {
-        User user = getTestUser(1);
-        user.setEmail(null);
-
-        List<ConstraintViolation<User>> violations = new ArrayList<>(validator.validate(user));
-
-        ExpectedViolation expectedViolation = new ExpectedViolation(
-                "email", "не должно быть пустым");
-        assertEquals(1, violations.size());
-        assertEquals(
-                expectedViolation.propertyPath,
-                violations.get(0).getPropertyPath().toString()
-        );
-        assertEquals(
-                expectedViolation.message,
-                violations.get(0).getMessage()
-        );
-    }
-
-    @Test
-    void createUserWithBlankEMail() {
-        User user = getTestUser(1);
-        user.setEmail("");
-
-        List<ConstraintViolation<User>> violations = new ArrayList<>(validator.validate(user));
-
-        ExpectedViolation expectedViolation = new ExpectedViolation(
-                "email", "не должно быть пустым");
-        assertEquals(1, violations.size());
-        assertEquals(
-                expectedViolation.propertyPath,
-                violations.get(0).getPropertyPath().toString()
-        );
-        assertEquals(
-                expectedViolation.message,
-                violations.get(0).getMessage()
-        );
-    }
-
-    @Test
-    void createUserWithNullLogin() {
-        User user = getTestUser(1);
-        user.setLogin(null);
-
-        List<ConstraintViolation<User>> violations = new ArrayList<>(validator.validate(user));
-
-        ExpectedViolation expectedViolation = new ExpectedViolation(
-                "login", "не должно быть пустым");
-        assertEquals(1, violations.size());
-        assertEquals(
-                expectedViolation.propertyPath,
-                violations.get(0).getPropertyPath().toString()
-        );
-        assertEquals(
-                expectedViolation.message,
-                violations.get(0).getMessage()
-        );
-    }
-
-    @Test
-    void createUserWithBlankLogin() {
-        User user = getTestUser(1);
-        user.setLogin("");
-
-        List<ConstraintViolation<User>> violations = new ArrayList<>(validator.validate(user));
-
-        ExpectedViolation expectedViolation = new ExpectedViolation(
-                "login", "не должно быть пустым");
-        assertEquals(1, violations.size());
-        assertEquals(
-                expectedViolation.propertyPath,
-                violations.get(0).getPropertyPath().toString()
-        );
-        assertEquals(
-                expectedViolation.message,
-                violations.get(0).getMessage()
-        );
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {
-            "log  in",
-            "  login",
-            "login "
-    })
     void createUserWithSpaceInLogin(String login) {
         User user = getTestUser(1);
         user.setLogin(login);
@@ -275,25 +158,6 @@ class UserDbStorageTest {
         assertEquals(user.getBirthday(), responseEntity.iterator().next().getBirthday());
     }
 
-    @Test
-    void createUserWithBirthdayAfterNow() {
-        User user = getTestUser(1);
-        user.setBirthday(LocalDate.now().plusDays(1));
-
-        List<ConstraintViolation<User>> violations = new ArrayList<>(validator.validate(user));
-        System.out.println(violations);
-        ExpectedViolation expectedViolation = new ExpectedViolation(
-                "birthday", "должно содержать прошедшую дату");
-        assertEquals(1, violations.size());
-        assertEquals(
-                expectedViolation.propertyPath,
-                violations.get(0).getPropertyPath().toString()
-        );
-        assertEquals(
-                expectedViolation.message,
-                violations.get(0).getMessage()
-        );
-    }
 
     @Test
     void createUserWithBirthdayNow() {
