@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Friend {
     @NotNull
-    Long friendId;
+    private Long friendId;
     @NotNull
-    Integer status;
+    private Integer status;
 }

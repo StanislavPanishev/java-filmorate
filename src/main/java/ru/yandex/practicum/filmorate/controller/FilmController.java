@@ -17,7 +17,6 @@ public class FilmController {
 
     private final FilmService filmService;
 
-    // Получение всех фильмов.
     @GetMapping
     public Collection<Film> findAllFilms() {
         return filmService.getAll();
@@ -28,12 +27,9 @@ public class FilmController {
         return filmService.get(id);
     }
 
-    // Добавление фильма
     @PostMapping
-    //@ResponseStatus(HttpStatus.OK)
     public Film create(@Valid @RequestBody Film film) {
         log.info("Добавлен фильм с id={}", film.getId());
-        // сохраняем новую публикацию в памяти приложения
         filmService.create(film);
         return film;
     }
@@ -44,7 +40,6 @@ public class FilmController {
         log.info("Удален фильм с id {}", id);
     }
 
-    // Обновление фильма
     @PutMapping
     public Film update(@Valid @RequestBody Film film) {
         log.info("Изменен фильм с id={}", film.getId());

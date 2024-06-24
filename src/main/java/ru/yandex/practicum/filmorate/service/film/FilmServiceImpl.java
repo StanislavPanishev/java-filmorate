@@ -48,12 +48,12 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public Film addLike(Long id, Long userId) {
-            return filmStorage.addLike(id, userId);
+        return filmStorage.addLike(id, userId);
     }
 
     @Override
     public void deleteLike(Long id, Long userId) {
-            filmStorage.deleteLike(id, userId);
+        filmStorage.deleteLike(id, userId);
     }
 
     @Override
@@ -67,7 +67,6 @@ public class FilmServiceImpl implements FilmService {
         }
         return true;
     }
-
 
 
 }
