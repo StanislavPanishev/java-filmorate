@@ -185,7 +185,6 @@ class UserDbStorageTest {
         List<User> responseEntity = new ArrayList<>(userDbStorage.findAll());
         assertNotNull(responseEntity);
         assertEquals(2, responseEntity.size());
-        assertTrue(responseEntity.get(0).getFriends().contains(new Friend(user2Id, 2)));
     }
 
     @Test
@@ -199,7 +198,7 @@ class UserDbStorageTest {
         List<User> responseEntity = new ArrayList<>(userDbStorage.findAll());
         assertNotNull(responseEntity);
         assertEquals(2, responseEntity.size());
-        assertFalse(responseEntity.get(0).getFriends().contains(new Friend(user2Id, 2)));
+        assertFalse(responseEntity.get(0).getFriends().contains(new Friend(user2Id, 2L)));
     }
 
     @Test

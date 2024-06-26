@@ -1,7 +1,9 @@
 package ru.yandex.practicum.filmorate.exceptions;
 
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -36,5 +38,11 @@ public class ErrorHandler {
     public Map<String, String> handleNotFoundError(final NotFoundException e) {
         log.info("error 404 {}", e.getMessage());
         return Map.of("Ресурс не найден", e.getMessage());
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handlerPositiveCountError(ConstraintViolationException e) {
+        log.info("error 404 {}", e.getMessage());
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

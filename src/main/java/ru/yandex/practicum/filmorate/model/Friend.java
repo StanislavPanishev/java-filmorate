@@ -12,5 +12,5 @@ public class Friend {
     @NotNull
     private Long friendId;
     @NotNull
-    private Integer status;
+    private Long userId;
 }

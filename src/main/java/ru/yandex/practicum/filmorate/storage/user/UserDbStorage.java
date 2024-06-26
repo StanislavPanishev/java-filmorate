@@ -19,8 +19,8 @@ import java.util.List;
 @Component
 @Primary
 public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
-    private static final int USERS_FRIENDSHIP_STATUS_CONFIRMED = 1;
-    private static final int USERS_FRIENDSHIP_STATUS_UNCONFIRMED = 2;
+    private static final Long USERS_FRIENDSHIP_STATUS_CONFIRMED = 1L;
+    private static final Long USERS_FRIENDSHIP_STATUS_UNCONFIRMED = 2L;
     private static final String USERS_FIND_ALL_QUERY = """
             SELECT *
             FROM USERS;
@@ -38,8 +38,8 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
             WHERE USER_ID = ?;
             """;
     private static final String USERS_ADD_TO_FRIENDS_QUERY = """
-            INSERT INTO FRIENDS (USER_ID, FRIEND_ID, STATUS_ID)
-            VALUES (?, ?, ?);
+            INSERT INTO FRIENDS (USER_ID, FRIEND_ID)
+            VALUES (?, ?);
             """;
     private static final String USERS_DELETE_FROM_FRIENDS_QUERY = """
             DELETE FROM FRIENDS
@@ -158,9 +158,9 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
 
     @Override
     public void addToFriends(Long id, Long friendId) {
-        if (!checkUserExists(id))
+        if (!isUserExists(id))
             throw new NotFoundException("Пользователь с id = " + id + " не найден");
-        if (!checkUserExists(friendId))
+        if (!isUserExists(friendId))
             throw new NotFoundException("Пользователь с id = " + friendId + " не найден");
         if (id == friendId)
             throw new ValidationException("Нельзя добавить самого себя в друзья (id = " + id + ")");
@@ -171,18 +171,17 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
         insert(
                 USERS_ADD_TO_FRIENDS_QUERY,
                 id,
-                friendId,
-                USERS_FRIENDSHIP_STATUS_UNCONFIRMED
+                friendId
         );
-        user.addFriend(new Friend(friendId, USERS_FRIENDSHIP_STATUS_UNCONFIRMED));
+        user.addFriend(new Friend(friendId, id));
         log.info("Пользователь с id = {} и пользователь с id = {} теперь друзья", friendId, id);
     }
 
     @Override
     public void deleteFromFriends(Long id, Long friendId) {
-        if (!checkUserExists(id))
+        if (!isUserExists(id))
             throw new NotFoundException("Пользователь с id = " + id + " не найден");
-        if (!checkUserExists(friendId))
+        if (!isUserExists(friendId))
             throw new NotFoundException("Пользователь с id = " + friendId + " не найден");
         delete(
                 USERS_DELETE_FROM_FRIENDS_QUERY,
@@ -240,11 +239,5 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
         return findOne(
                 USERS_FIND_BY_EMAIL_QUERY,
                 email).isPresent();
-    }
-
-    public boolean checkUserExists(Long id) {
-        return findOne(
-                USERS_FIND_BY_ID_QUERY,
-                id).isPresent();
     }
 }

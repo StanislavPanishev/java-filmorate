@@ -11,6 +11,7 @@ import lombok.*;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.TreeSet;
 
 
 @Data
@@ -34,7 +35,7 @@ public class Film {
 
     @EqualsAndHashCode.Exclude
     @Builder.Default
-    private Collection<Long> likes = new HashSet<>();
+    private Collection<Long> likes = new TreeSet<>();
 
     public void addLike(Long id) {
         likes.add(id);

@@ -11,14 +11,17 @@ import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.BaseDbStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import static java.util.function.UnaryOperator.identity;
+
 
 @Slf4j
 @Component
@@ -256,16 +259,14 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             ORDER BY FILMS_ID
             """;
 
-    private final UserStorage userStorage;
     private final GenreStorage genreStorage;
     private final MpaStorage mpaStorage;
     private final FilmLikeStorage filmLikeStorage;
     private final FilmGenreStorage filmGenreStorage;
 
-    public FilmDbStorage(JdbcTemplate jdbc, RowMapper<Film> mapper, UserStorage userStorage, GenreStorage genreStorage,
+    public FilmDbStorage(JdbcTemplate jdbc, RowMapper<Film> mapper, GenreStorage genreStorage,
                          MpaStorage mpaStorage, FilmLikeStorage likeStorage, FilmGenreStorage filmGenreStorage) {
         super(jdbc, mapper);
-        this.userStorage = userStorage;
         this.genreStorage = genreStorage;
         this.mpaStorage = mpaStorage;
         this.filmLikeStorage = likeStorage;
@@ -426,20 +427,31 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
         if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
             throw new ValidationException("Дата релиза — не раньше 28 декабря 1895 года");
         }
-        genreStorage.checkGenresExists(film.getGenres());
         film.setGenres(new HashSet<>(film.getGenres()));
+        genreStorage.checkGenresExists(film.getGenres());
+
+
+
         if (!mpaStorage.isMpaExists(film.getMpa().getId())) {
             throw new ValidationException("Рейтинг MPA с id = " + film.getMpa().getId() + " не найден!");
         }
     }
 
     private void setFilmsGenres(Collection<Film> films) {
+
+        final Map<Long, Film> filmById = films.stream().collect(Collectors.toMap(Film::getId, identity()));
+
         String filmsId = films.stream()
                 .map(film -> {
                     return film.getId().toString();
                 })
                 .collect(Collectors.joining(", "));
+
         Collection<FilmGenre> filmGenres = filmGenreStorage.findGenresOfFilms(filmsId);
+
+
+
+
         for (Film film : films) {
             film.setGenres(filmGenres.stream()
                     .filter(filmGenre -> film.getId() == filmGenre.getFilmId())
