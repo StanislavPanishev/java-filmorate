@@ -449,17 +449,11 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 
         Collection<FilmGenre> filmGenres = filmGenreStorage.findGenresOfFilms(filmsId);
 
-
-
-
-        for (Film film : films) {
-            film.setGenres(filmGenres.stream()
-                    .filter(filmGenre -> film.getId() == filmGenre.getFilmId())
-                    .map(filmGenre -> new Genre(
-                            filmGenre.getGenreId(),
-                            filmGenre.getGenre())
-                    )
-                    .collect(Collectors.toList()));
+        for (FilmGenre filmGenre : filmGenres) {
+            Film film = filmById.get(filmGenre.getFilmId());
+            if (film != null) {
+                film.getGenres().add(new Genre(filmGenre.getGenreId(), filmGenre.getGenre()));
+            }
         }
     }
 
