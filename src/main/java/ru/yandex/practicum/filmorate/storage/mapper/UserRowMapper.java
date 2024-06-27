@@ -15,14 +15,13 @@ public class UserRowMapper implements RowMapper<User> {
     private final FriendStorage friendStorage;
 
     @Override
-    public User mapRow(ResultSet resultSet, int rowNum) throws SQLException {
+    public User mapRow(ResultSet rs, int rowNum) throws SQLException {
         User user = new User();
-        user.setId(resultSet.getLong("USER_ID"));
-        user.setName(resultSet.getString("NAME"));
-        user.setEmail(resultSet.getString("EMAIL"));
-        user.setLogin(resultSet.getString("LOGIN"));
-        user.setBirthday(resultSet.getDate("BIRTHDAY").toLocalDate());
-        user.setFriends(friendStorage.findFriendsOfUser(user.getId()));
+        user.setId(rs.getLong("USER_ID"));
+        user.setName(rs.getString("NAME"));
+        user.setEmail(rs.getString("EMAIL"));
+        user.setLogin(rs.getString("LOGIN"));
+        user.setBirthday(rs.getDate("BIRTHDAY").toLocalDate());
         return user;
     }
 }

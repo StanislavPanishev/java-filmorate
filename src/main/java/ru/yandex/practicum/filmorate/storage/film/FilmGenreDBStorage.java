@@ -1,7 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -10,9 +8,7 @@ import ru.yandex.practicum.filmorate.storage.BaseDbStorage;
 
 import java.util.Collection;
 
-@Slf4j
 @Component
-@Primary
 public class FilmGenreDBStorage extends BaseDbStorage<FilmGenre> implements FilmGenreStorage {
     private static final String GENRES_FIND_BY_FILM_ID_QUERY = """
             SELECT fg.FILMS_ID, g.GENRE_ID, g.GENRE_NAME

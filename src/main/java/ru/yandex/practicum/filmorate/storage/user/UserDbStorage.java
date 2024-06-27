@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
-import ru.yandex.practicum.filmorate.model.Friend;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.BaseDbStorage;
 
@@ -173,7 +172,6 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
                 id,
                 friendId
         );
-        user.addFriend(new Friend(friendId, id));
         log.info("Пользователь с id = {} и пользователь с id = {} теперь друзья", friendId, id);
     }
 

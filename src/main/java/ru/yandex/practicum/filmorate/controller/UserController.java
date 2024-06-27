@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.user.UserServiceImpl;
+import ru.yandex.practicum.filmorate.service.user.UserService;
 
 import java.util.Collection;
 
@@ -15,7 +15,7 @@ import java.util.Collection;
 @RequestMapping("/users")
 public class UserController {
 
-    private final UserServiceImpl userService;
+    private final UserService userService;
 
     @GetMapping
     public Collection<User> findAll() {

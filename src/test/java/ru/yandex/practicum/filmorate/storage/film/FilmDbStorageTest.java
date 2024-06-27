@@ -49,7 +49,7 @@ public class FilmDbStorageTest {
                         .releaseDate(LocalDate.now())
                         .duration(88)
                         .mpa(new Mpa(1, "G"))
-                        .genres(List.of(
+                        .genres(Set.of(
                                 new Genre(1, "Комедия"),
                                 new Genre(2, "Драма")))
                         .build();
@@ -62,7 +62,7 @@ public class FilmDbStorageTest {
                         .releaseDate(LocalDate.now().minusYears(1))
                         .duration(88)
                         .mpa(new Mpa(2, "PG"))
-                        .genres(List.of(
+                        .genres(Set.of(
                                 new Genre(3, "Мультфильм")))
                         .build();
                 return film2;
@@ -74,7 +74,7 @@ public class FilmDbStorageTest {
                         .releaseDate(LocalDate.now().minusMonths(3))
                         .duration(88)
                         .mpa(new Mpa(3, "PG-13"))
-                        .genres(List.of(
+                        .genres(Set.of(
                                 new Genre(4, "Триллер")))
                         .build();
                 return film3;

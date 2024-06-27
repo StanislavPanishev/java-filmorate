@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.service.film;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -13,11 +12,12 @@ import java.util.Collection;
 
 
 @Service
-@Slf4j
 @AllArgsConstructor
 public class FilmServiceImpl implements FilmService {
 
     private FilmStorage filmStorage;
+
+    static final LocalDate dateOfFirstFilm = LocalDate.of(1895, 1, 28);
 
     @Override
     public Collection<Film> getAll() {
@@ -47,8 +47,8 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
-    public Film addLike(Long id, Long userId) {
-        return filmStorage.addLike(id, userId);
+    public void addLike(Long id, Long userId) {
+        filmStorage.addLike(id, userId);
     }
 
     @Override
@@ -61,11 +61,12 @@ public class FilmServiceImpl implements FilmService {
         return filmStorage.getPopular(count);
     }
 
-    private boolean validate(Film film) {
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 1, 28))) {
-            throw new ValidationException("Дата релиза не может быть раньше 28 декабря 1895 года!");
+    private void validate(Film film) {
+        if (film != null) {
+            if (film.getReleaseDate().isBefore(dateOfFirstFilm)) {
+                throw new ValidationException("Дата релиза не может быть раньше 28 декабря 1895 года!");
+            }
         }
-        return true;
     }
 
 

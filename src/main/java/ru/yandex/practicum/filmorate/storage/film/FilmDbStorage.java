@@ -310,7 +310,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
         film.setGenres(film.getGenres().stream()
                 .distinct()
                 .sorted(Comparator.comparingInt(Genre::getId))
-                .toList());
+                .collect(Collectors.toSet()));
         for (Genre genre : film.getGenres()) {
             insert(
                     FILMS_INSERT_FILMS_GENRE_QUERY,
@@ -344,7 +344,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             film.setGenres(film.getGenres().stream()
                     .distinct()
                     .sorted(Comparator.comparingInt(Genre::getId))
-                    .toList());
+                    .collect(Collectors.toSet()));
             for (Genre genre : film.getGenres()) {
                 insert(
                         FILMS_INSERT_FILMS_GENRE_QUERY,
@@ -371,7 +371,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     }
 
     @Override
-    public Film addLike(Long id, Long userId) {
+    public void addLike(Long id, Long userId) {
         if (!isFilmExists(id))
             throw new NotFoundException("Фильм с id = " + id + " не найден");
         Film film = findOne(
@@ -383,10 +383,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
                 id,
                 userId
         );
-        //assert film != null;
-        film.addLike(userId);
         log.info("Пользователь с id = {} поставил лайк фильму id = {}", userId, id);
-        return film;
     }
 
     @Override
@@ -403,7 +400,6 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
                 userId
         );
         assert film != null;
-        film.deleteLike(userId);
         log.info("Пользователь с id = {} удалил лайк фильму id = {}", userId, id);
     }
 
@@ -429,7 +425,6 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
         }
         film.setGenres(new HashSet<>(film.getGenres()));
         genreStorage.checkGenresExists(film.getGenres());
-
 
 
         if (!mpaStorage.isMpaExists(film.getMpa().getId())) {

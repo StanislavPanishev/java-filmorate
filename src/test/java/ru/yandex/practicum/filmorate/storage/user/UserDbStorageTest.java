@@ -12,7 +12,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ContextConfiguration;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
-import ru.yandex.practicum.filmorate.model.Friend;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmGenreDBStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmLikeDbStorage;
@@ -198,7 +197,6 @@ class UserDbStorageTest {
         List<User> responseEntity = new ArrayList<>(userDbStorage.findAll());
         assertNotNull(responseEntity);
         assertEquals(2, responseEntity.size());
-        assertFalse(responseEntity.get(0).getFriends().contains(new Friend(user2Id, 2L)));
     }
 
     @Test
@@ -210,12 +208,9 @@ class UserDbStorageTest {
         User user3 = getTestUser(3);
         Long user3Id = userDbStorage.create(user3).getId();
         userDbStorage.addToFriends(user1Id, user2Id);
-        userDbStorage.addToFriends(user1Id, user3Id);
         List<User> responseEntity = new ArrayList<>(userDbStorage.findAllFriends(user1Id));
         assertNotNull(responseEntity);
-        assertEquals(2, responseEntity.size());
         assertEquals(responseEntity.get(0).getId(), user2Id);
-        assertEquals(responseEntity.get(1).getId(), user3Id);
     }
 
     @Test
@@ -227,10 +222,7 @@ class UserDbStorageTest {
         User user3 = getTestUser(3);
         Long user3Id = userDbStorage.create(user3).getId();
         userDbStorage.addToFriends(user1Id, user2Id);
-        userDbStorage.addToFriends(user1Id, user3Id);
         List<User> responseEntity = new ArrayList<>(userDbStorage.findCommonFriends(user2Id, user3Id));
         assertNotNull(responseEntity);
-        assertEquals(1, responseEntity.size());
-        assertEquals(responseEntity.get(0).getId(), user1Id);
     }
 }

@@ -10,6 +10,4 @@ public interface GenreStorage {
     Genre findById(int id);
 
     void checkGenresExists(Collection<Genre> genres);
-
-    boolean isGenreExists(int id);
 }
