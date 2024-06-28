@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,8 @@ import ru.yandex.practicum.filmorate.storage.BaseDbStorage;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 
 import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -140,7 +143,8 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
                 film.getMpa().getId()
         );
         film.setId(id);
-        film.getGenres().forEach(genre -> insert(FILMS_INSERT_FILMS_GENRE_QUERY, id, genre.getId()));
+        //film.getGenres().forEach(genre -> insert(FILMS_INSERT_FILMS_GENRE_QUERY, id, genre.getId()));
+        updateGenres(film.getGenres(), id);
         log.info("Фильм {} добавлен в список с id = {}", film.getName(), film.getId());
         return film;
     }
@@ -164,7 +168,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
                     FILMS_DELETE_FILMS_GENRE_QUERY,
                     film.getId()
             );
-            film.getGenres().forEach(genre -> insert(FILMS_INSERT_FILMS_GENRE_QUERY, film.getId(), genre.getId()));
+            updateGenres(film.getGenres(), film.getId());
             delete(
                     film.getId()
             );
@@ -283,6 +287,28 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             if (film != null) {
                 film.getGenres().add(new Genre(filmGenre.getGenreId(), filmGenre.getGenre()));
             }
+        }
+    }
+
+    private void updateGenres(Set<Genre> genres, Long id) {
+
+        if (genres.size() > 0) {
+
+            Genre[] g = genres.toArray(new Genre[genres.size()]);
+
+            jdbc.batchUpdate(
+                    FILMS_INSERT_FILMS_GENRE_QUERY,
+                    new BatchPreparedStatementSetter() {
+                        @Override
+                        public void setValues(PreparedStatement ps, int i) throws SQLException {
+                            ps.setInt(1, Math.toIntExact(id));
+                            ps.setInt(2, g[i].getId());
+                        }
+
+                        public int getBatchSize() {
+                            return genres.size();
+                        }
+                    });
         }
     }
 }
