@@ -9,15 +9,11 @@ import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.BaseDbStorage;
-import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.function.UnaryOperator.identity;
@@ -78,59 +74,6 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             ORDER BY count DESC
             LIMIT ?;
             """;
-    private static final String FILMS_GET_POPULAR_QUERY_BY_GENRE = """
-            SELECT
-                f.FILMS_ID AS FILMS_ID,
-                f.NAME AS NAME,
-                f.DESCRIPTION AS DESCRIPTION,
-                f.RELEASE_DATE AS RELEASE_DATE,
-                f.DURATION AS DURATION,
-                r.RATING_ID AS RATING_ID,
-                r.MPA_NAME AS MPA_NAME,
-                COUNT(f.FILMS_ID) AS count
-            FROM FILMS AS f
-            LEFT JOIN MPA AS r ON f.RATING_ID = r.RATING_ID
-            LEFT JOIN FILMS_GENRES AS fg ON fg.FILMS_ID = f.FILMS_ID
-            WHERE fg.GENRE_ID = ?
-            GROUP BY FILMS_ID
-            ORDER BY count DESC
-            LIMIT ?;
-            """;
-    private static final String FILMS_GET_POPULAR_QUERY_BY_YEAR = """
-            SELECT
-                f.FILMS_ID AS FILMS_ID,
-                f.NAME AS NAME,
-                f.DESCRIPTION AS DESCRIPTION,
-                f.RELEASE_DATE AS RELEASE_DATE,
-                f.DURATION AS DURATION,
-                r.RATING_ID AS RATING_ID,
-                r.MPA_NAME AS MPA_NAME,
-                COUNT(f.FILMS_ID) AS count
-            FROM FILMS AS f
-            LEFT JOIN MPA AS r ON f.RATING_ID = r.RATING_ID
-            WHERE EXTRACT(YEAR FROM f.RELEASE_DATE) = ?
-            GROUP BY FILMS_ID
-            ORDER BY count DESC
-            LIMIT ?;
-            """;
-    private static final String FILMS_GET_POPULAR_QUERY_BY_YEAR_AND_GENRE = """
-            SELECT
-                f.FILMS_ID AS FILMS_ID,
-                f.NAME AS NAME,
-                f.DESCRIPTION AS DESCRIPTION,
-                f.RELEASE_DATE AS RELEASE_DATE,
-                f.DURATION AS DURATION,
-                r.RATING_ID AS RATING_ID,
-                r.MPA_NAME AS MPA_NAME,
-                COUNT(f.FILMS_ID) AS count
-            FROM FILMS AS f
-            LEFT JOIN MPA AS r ON f.RATING_ID = r.RATING_ID
-            LEFT JOIN FILMS_GENRES AS fg ON fg.FILMS_ID = f.FILMS_ID
-            WHERE EXTRACT(YEAR FROM f.RELEASE_DATE) = ? AND fg.GENRE_ID = ?
-            GROUP BY FILMS_ID
-            ORDER BY count DESC
-            LIMIT ?;
-            """;
     private static final String FILMS_DELETE_FILMS_GENRE_QUERY = """
             DELETE FROM FILMS_GENRES
             WHERE FILMS_ID = ?;
@@ -140,136 +83,28 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
                 VALUES (?, ?);
             """;
 
-    private static final String FILMS_GET_POPULAR_QUERY_WITH_GENRE = """
-            SELECT
-                        f.FILMS_ID AS FILMS_ID,
-                        f.NAME AS NAME,
-                        f.DESCRIPTION AS DESCRIPTION,
-                        f.RELEASE_DATE AS RELEASE_DATE,
-                        f.DURATION AS DURATION,
-                        r.RATING_ID AS RATING_ID,
-                        r.MPA AS MPA,
-                        COUNT(l.FILMS_ID) AS count
-                    FROM FILMS AS f
-                    LEFT JOIN LIKES AS l ON l.FILMS_ID = f.FILMS_ID
-                    LEFT JOIN MPA AS r ON f.RATING_ID = r.RATING_ID
-                    LEFT JOIN FILMS_GENRES AS fg ON fg.FILMS_ID = f.FILMS_ID
-                    LEFT JOIN GENRES AS g ON g.GENRE_ID = fg.GENRE_ID
-                    WHERE fg.GENRE_ID = ?
-                    GROUP BY FILMS_ID
-                    ORDER BY count DESC
-                    LIMIT ?;
-            """;
-
-    private static final String FILMS_GET_POPULAR_QUERY_WITH_YEAR = """
-            SELECT
-                        f.FILMS_ID AS FILMS_ID,
-                        f.NAME AS NAME,
-                        f.DESCRIPTION AS DESCRIPTION,
-                        f.RELEASE_DATE AS RELEASE_DATE,
-                        f.DURATION AS DURATION,
-                        r.RATING_ID AS RATING_ID,
-                        r.MPA AS MPA,
-                        COUNT(l.FILMS_ID) AS count
-                    FROM FILMS AS f
-                    LEFT JOIN LIKES AS l ON l.FILMS_ID = f.FILMS_ID
-                    LEFT JOIN MPA AS r ON f.RATING_ID = r.RATING_ID
-                    LEFT JOIN FILMS_GENRES AS fg ON fg.FILMS_ID = f.FILMS_ID
-                    LEFT JOIN GENRES AS g ON g.GENRE_ID = fg.GENRE_ID
-                    WHERE EXTRACT(YEAR FROM f.RELEASE_DATE) = ?
-                    GROUP BY FILMS_ID
-                    ORDER BY count DESC
-                    LIMIT ?;
-            """;
-
-    private static final String FILMS_GET_POPULAR_QUERY_WITH_YEAR_AND_GENRE = """
-            SELECT
-                        f.FILMS_ID AS FILMS_ID,
-                        f.NAME AS NAME,
-                        f.DESCRIPTION AS DESCRIPTION,
-                        f.RELEASE_DATE AS RELEASE_DATE,
-                        f.DURATION AS DURATION,
-                        r.RATING_ID AS RATING_ID,
-                        r.MPA AS MPA,
-                        COUNT(l.FILMS_ID) AS count
-                    FROM FILMS AS f
-                    LEFT JOIN LIKES AS l ON l.FILMS_ID = f.FILMS_ID
-                    LEFT JOIN MPA AS r ON f.RATING_ID = r.RATING_ID
-                    LEFT JOIN FILMS_GENRES AS fg ON fg.FILMS_ID = f.FILMS_ID
-                    LEFT JOIN GENRES AS g ON g.GENRE_ID = fg.GENRE_ID
-                    WHERE EXTRACT(YEAR FROM f.RELEASE_DATE) = ? AND fg.GENRE_ID = ?
-                    GROUP BY FILMS_ID
-                    ORDER BY count DESC
-                    LIMIT ?;
-            """;
-    private static final String FILMS_SEARCH_BY_TITLE = """
-            SELECT
-                f.FILMS_ID AS FILMS_ID,
-                f.NAME AS NAME,
-                f.DESCRIPTION AS DESCRIPTION,
-                f.RELEASE_DATE AS RELEASE_DATE,
-                f.DURATION AS DURATION,
-                r.RATING_ID AS RATING_ID,
-                r.MPA_NAME AS MPA_NAME,
-            COUNT(l.FILMS_ID) AS count
-            FROM FILMS AS f
-            LEFT JOIN LIKES AS l ON l.FILMS_ID = f.FILMS_ID
-            LEFT JOIN MPA AS r ON  f.RATING_ID = r.RATING_ID
-            WHERE LOWER(f.NAME) LIKE LOWER('%' || ? || '%')
-            GROUP BY f.NAME, f.FILMS_ID
-            ORDER BY FILMS_ID;
-            """;
-
-
     private static final String FILMS_DELETE = """
             DELETE FROM FILMS
             WHERE FILMS_ID = ?;
             """;
 
-    private static final String GET_FILMS_RECOMMENDATIONS = """
-            SELECT
-                         f.FILMS_ID AS FILMS_ID,
-                         f.NAME AS NAME,
-                         f.DESCRIPTION AS DESCRIPTION,
-                         f.RELEASE_DATE AS RELEASE_DATE,
-                         f.DURATION AS DURATION,
-                         r.RATING_ID AS RATING_ID,
-                         r.MPA_NAME AS MPA_NAME
-             FROM FILMS f
-             LEFT JOIN MPA AS r ON f.RATING_ID = r.RATING_ID
-             LEFT JOIN LIKES l ON f.FILMS_ID = l.FILMS_ID
-             WHERE l.USER_ID IN
-             (SELECT USER_ID FROM LIKES WHERE NOT USER_ID = ? AND FILMS_ID IN
-             (SELECT FILMS_ID FROM LIKES WHERE USER_ID = ?)
-             GROUP BY USER_ID order by COUNT(FILMS_ID) desc LIMIT 1)
-             AND NOT l.FILMS_ID  IN (SELECT FILMS_ID FROM LIKES WHERE USER_ID = ?)
-             LIMIT 1;
+    private static final String GENRES_FIND_BY_IDS_QUERY = """
+            SELECT GENRE_ID FROM GENRES WHERE GENRE_ID IN (%S)
             """;
 
-    private static final String GET_COMMON_FILMS = """
+    private static final String MPA_FIND_BY_ID_QUERY = """
             SELECT *
-            FROM FILMS AS f
-            LEFT JOIN MPA AS r ON  f.RATING_ID = r.RATING_ID
-            WHERE FILMS_ID IN (
-                SELECT l1.FILMS_ID
-                FROM LIKES AS l1
-                LEFT JOIN LIKES AS l2 ON l1.FILMS_ID = l2.FILMS_ID
-                WHERE l1.USER_ID = ? AND l2.USER_ID = ?
-            )
-            ORDER BY FILMS_ID
+            FROM MPA
+            WHERE RATING_ID = ?;
             """;
 
-    private final GenreStorage genreStorage;
     private final MpaStorage mpaStorage;
-    private final FilmLikeStorage filmLikeStorage;
     private final FilmGenreStorage filmGenreStorage;
 
-    public FilmDbStorage(JdbcTemplate jdbc, RowMapper<Film> mapper, GenreStorage genreStorage,
-                         MpaStorage mpaStorage, FilmLikeStorage likeStorage, FilmGenreStorage filmGenreStorage) {
+    public FilmDbStorage(JdbcTemplate jdbc, RowMapper<Film> mapper,
+                         MpaStorage mpaStorage, FilmGenreStorage filmGenreStorage) {
         super(jdbc, mapper);
-        this.genreStorage = genreStorage;
         this.mpaStorage = mpaStorage;
-        this.filmLikeStorage = likeStorage;
         this.filmGenreStorage = filmGenreStorage;
     }
 
@@ -279,7 +114,6 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
         log.info("Получение списка фильмов");
         Collection<Film> films = findMany(FILMS_FIND_ALL_QUERY);
         setFilmsGenres(films);
-        setFilmsLikes(films);
         return films;
     }
 
@@ -291,7 +125,6 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             throw new NotFoundException("Фильм с id = " + id + " не найден!");
         }
         setFilmsGenres(films);
-        setFilmsLikes(films);
         return films.iterator().next();
     }
 
@@ -307,17 +140,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
                 film.getMpa().getId()
         );
         film.setId(id);
-        film.setGenres(film.getGenres().stream()
-                .distinct()
-                .sorted(Comparator.comparingInt(Genre::getId))
-                .collect(Collectors.toSet()));
-        for (Genre genre : film.getGenres()) {
-            insert(
-                    FILMS_INSERT_FILMS_GENRE_QUERY,
-                    film.getId(),
-                    genre.getId()
-            );
-        }
+        film.getGenres().forEach(genre -> insert(FILMS_INSERT_FILMS_GENRE_QUERY, id, genre.getId()));
         log.info("Фильм {} добавлен в список с id = {}", film.getName(), film.getId());
         return film;
     }
@@ -341,17 +164,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
                     FILMS_DELETE_FILMS_GENRE_QUERY,
                     film.getId()
             );
-            film.setGenres(film.getGenres().stream()
-                    .distinct()
-                    .sorted(Comparator.comparingInt(Genre::getId))
-                    .collect(Collectors.toSet()));
-            for (Genre genre : film.getGenres()) {
-                insert(
-                        FILMS_INSERT_FILMS_GENRE_QUERY,
-                        film.getId(),
-                        genre.getId()
-                );
-            }
+            film.getGenres().forEach(genre -> insert(FILMS_INSERT_FILMS_GENRE_QUERY, film.getId(), genre.getId()));
             delete(
                     film.getId()
             );
@@ -361,7 +174,6 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
         throw new NotFoundException("Фильм с id = " + film.getId() + " не найден");
     }
 
-    // удаление фильма по id, модифицировал связи в schema, при удалении фильма удаляются зависимые записи по id
     @Override
     public void delete(Long id) {
         if (!isFilmExists(id))
@@ -424,13 +236,35 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             throw new ValidationException("Дата релиза — не раньше 28 декабря 1895 года");
         }
         film.setGenres(new HashSet<>(film.getGenres()));
-        genreStorage.checkGenresExists(film.getGenres());
-
-
+        checkGenresExists(film.getGenres());
         if (!mpaStorage.isMpaExists(film.getMpa().getId())) {
             throw new ValidationException("Рейтинг MPA с id = " + film.getMpa().getId() + " не найден!");
         }
     }
+
+    public void checkGenresExists(Collection<Genre> genres) {
+        if (genres.isEmpty()) {
+            return;
+        }
+
+        List<Integer> genreIds = genres.stream()
+                .map(Genre::getId)
+                .toList();
+
+        List<Integer> existingGenreIds = findExistingGenreIds(genreIds);
+
+        for (Genre genre : genres) {
+            if (!existingGenreIds.contains(genre.getId()))
+                throw new ValidationException("Жанр с id = " + genre.getId() + " не найден!");
+        }
+    }
+
+    private List<Integer> findExistingGenreIds(List<Integer> genreIds) {
+        String inClause = String.join(",", Collections.nCopies(genreIds.size(), "?"));
+        String query = String.format(GENRES_FIND_BY_IDS_QUERY, inClause);
+        return jdbc.queryForList(query, Integer.class, genreIds.toArray());
+    }
+
 
     private void setFilmsGenres(Collection<Film> films) {
 
@@ -451,21 +285,4 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             }
         }
     }
-
-    private void setFilmsLikes(Collection<Film> films) {
-        String filmsId = films.stream()
-                .map(film -> {
-                    return film.getId().toString();
-                })
-                .collect(Collectors.joining(", "));
-        Collection<FilmLike> filmLikes = filmLikeStorage.findLikesOfFilms(filmsId);
-        for (Film film : films) {
-            film.setLikes(filmLikes.stream()
-                    .filter(filmLike -> film.getId() == filmLike.getFilmId())
-                    .map(filmLike -> filmLike.getUserId())
-                    .collect(Collectors.toList()));
-        }
-    }
-
-
 }

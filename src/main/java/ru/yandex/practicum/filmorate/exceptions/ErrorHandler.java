@@ -42,7 +42,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     public ResponseEntity<String> handlerPositiveCountError(ConstraintViolationException e) {
-        log.info("error 404 {}", e.getMessage());
+        log.debug("Получен статус 404 Not found {}", e.getMessage(), e);
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

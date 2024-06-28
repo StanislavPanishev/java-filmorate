@@ -5,10 +5,8 @@ import lombok.*;
 
 
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 
 @Data
@@ -31,10 +29,6 @@ public class Film {
     @Positive
     @NotNull
     private Integer duration;
-
-    @EqualsAndHashCode.Exclude
-    @Builder.Default
-    private Collection<Long> likes = new TreeSet<>();
 
     @NotNull
     private Mpa mpa;

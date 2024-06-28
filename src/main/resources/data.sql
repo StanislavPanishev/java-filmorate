@@ -12,10 +12,3 @@ VALUES ('G'),
        ('PG-13'),
        ('R'),
        ('NC-17');
-
-INSERT INTO STATUS (STATUS_NAME)
-VALUES ('CONFIRMED'),
-       ('UNCONFIRMED');
-
-
-
