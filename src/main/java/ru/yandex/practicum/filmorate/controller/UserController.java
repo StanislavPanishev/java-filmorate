@@ -17,13 +17,11 @@ public class UserController {
 
     private final UserService userService;
 
-    // Получение списка всех пользователей
     @GetMapping
-    public Collection<User> findAllUsers() {
+    public Collection<User> findAll() {
         return userService.getAll();
     }
 
-    // Создание пользователя
     @PostMapping
     public User create(@Valid @RequestBody User user) {
         userService.create(user);
@@ -35,7 +33,6 @@ public class UserController {
         return userService.get(id);
     }
 
-    // Обновление пользователя
     @PutMapping
     public User update(@Valid @RequestBody User user) {
         log.info("Изменен пользователь с id={}", user.getId());
