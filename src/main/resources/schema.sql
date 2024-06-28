@@ -5,7 +5,6 @@ DROP TABLE IF EXISTS
     GENRES,
     LIKES,
     MPA,
-    STATUS,
     USERS
     CASCADE;
 
