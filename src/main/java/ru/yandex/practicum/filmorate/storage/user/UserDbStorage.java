@@ -13,13 +13,13 @@ import ru.yandex.practicum.filmorate.storage.BaseDbStorage;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Component
 @Primary
 public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
-    private static final Long USERS_FRIENDSHIP_STATUS_CONFIRMED = 1L;
-    private static final Long USERS_FRIENDSHIP_STATUS_UNCONFIRMED = 2L;
+
     private static final String USERS_FIND_ALL_QUERY = """
             SELECT *
             FROM USERS;
@@ -161,7 +161,7 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
             throw new NotFoundException("Пользователь с id = " + id + " не найден");
         if (!isUserExists(friendId))
             throw new NotFoundException("Пользователь с id = " + friendId + " не найден");
-        if (id == friendId)
+        if (Objects.equals(id, friendId))
             throw new ValidationException("Нельзя добавить самого себя в друзья (id = " + id + ")");
         User user = findOne(
                 USERS_FIND_BY_ID_QUERY,

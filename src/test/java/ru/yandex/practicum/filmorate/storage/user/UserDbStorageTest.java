@@ -1,7 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.DisplayName;
@@ -11,12 +9,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ContextConfiguration;
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmGenreDBStorage;
-import ru.yandex.practicum.filmorate.storage.film.FilmLikeDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
-import ru.yandex.practicum.filmorate.storage.friend.FriendDbStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreDbStorage;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaDbStorage;
 
@@ -34,13 +29,10 @@ import static org.junit.jupiter.api.Assertions.*;
         GenreDbStorage.class,
         UserDbStorage.class,
         MpaDbStorage.class,
-        FilmLikeDbStorage.class,
-        FilmGenreDBStorage.class,
-        FriendDbStorage.class})
+        FilmGenreDBStorage.class})
 @ComponentScan(basePackages = {"ru.yandex.practicum.filmorate.storage.mapper"})
 class UserDbStorageTest {
     private final UserDbStorage userDbStorage;
-    private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
     @AllArgsConstructor
     static class ExpectedViolation {
@@ -50,7 +42,7 @@ class UserDbStorageTest {
 
     public User getTestUser(int id) {
         switch (id) {
-            case 1:
+            case 1 -> {
                 User user1 = User.builder()
                         .id(null)
                         .name("User1")
@@ -59,7 +51,8 @@ class UserDbStorageTest {
                         .birthday(LocalDate.of(2000, 2, 20))
                         .build();
                 return user1;
-            case 2:
+            }
+            case 2 -> {
                 User user2 = User.builder()
                         .id(null)
                         .name("User2")
@@ -68,7 +61,8 @@ class UserDbStorageTest {
                         .birthday(LocalDate.of(2000, 2, 20))
                         .build();
                 return user2;
-            case 3:
+            }
+            case 3 -> {
                 User user3 = User.builder()
                         .id(null)
                         .name("User3")
@@ -77,8 +71,10 @@ class UserDbStorageTest {
                         .birthday(LocalDate.of(2000, 2, 20))
                         .build();
                 return user3;
-            default:
+            }
+            default -> {
                 return null;
+            }
         }
     }
 
@@ -124,21 +120,6 @@ class UserDbStorageTest {
         assertEquals(newUser.getEmail(), responseEntity.iterator().next().getEmail());
         assertEquals(newUser.getName(), responseEntity.iterator().next().getName());
         assertEquals(newUser.getBirthday(), responseEntity.iterator().next().getBirthday());
-    }
-
-
-    void createUserWithSpaceInLogin(String login) {
-        User user = getTestUser(1);
-        user.setLogin(login);
-
-        Exception exception = assertThrows(
-                ValidationException.class,
-                () -> userDbStorage.create(user)
-        );
-        assertEquals(
-                "Логин не может содержать пробелов",
-                exception.getMessage()
-        );
     }
 
     @Test
@@ -205,8 +186,6 @@ class UserDbStorageTest {
         Long user1Id = userDbStorage.create(user).getId();
         User user2 = getTestUser(2);
         Long user2Id = userDbStorage.create(user2).getId();
-        User user3 = getTestUser(3);
-        Long user3Id = userDbStorage.create(user3).getId();
         userDbStorage.addToFriends(user1Id, user2Id);
         List<User> responseEntity = new ArrayList<>(userDbStorage.findAllFriends(user1Id));
         assertNotNull(responseEntity);

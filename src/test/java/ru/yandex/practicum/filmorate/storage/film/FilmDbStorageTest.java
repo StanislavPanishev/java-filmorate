@@ -41,7 +41,7 @@ public class FilmDbStorageTest {
 
     public Film getTestFilm(int id) {
         switch (id) {
-            case 1:
+            case 1 -> {
                 Film film = Film.builder()
                         .id(null)
                         .name("Film1")
@@ -54,7 +54,8 @@ public class FilmDbStorageTest {
                                 new Genre(2, "Драма")))
                         .build();
                 return film;
-            case 2:
+            }
+            case 2 -> {
                 Film film2 = Film.builder()
                         .id(null)
                         .name("Film2")
@@ -66,7 +67,8 @@ public class FilmDbStorageTest {
                                 new Genre(3, "Мультфильм")))
                         .build();
                 return film2;
-            case 3:
+            }
+            case 3 -> {
                 Film film3 = Film.builder()
                         .id(null)
                         .name("Film3")
@@ -78,8 +80,10 @@ public class FilmDbStorageTest {
                                 new Genre(4, "Триллер")))
                         .build();
                 return film3;
-            default:
+            }
+            default -> {
                 return null;
+            }
         }
     }
 
